@@ -1,0 +1,2286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPA Dashboard API - Documentação</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Tailwind's gray-50 */
+            color: #334155; /* Tailwind's slate-700 */
+        }
+        pre {
+            background-color: #1e293b; /* Tailwind's slate-800 */
+            color: #f8fafc; /* Tailwind's gray-50 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin-top: 0.75rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.875rem; /* sm */
+        }
+        code {
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+        }
+        summary {
+            cursor: pointer;
+            padding: 0.75rem 1rem;
+            background-color: #e2e8f0; /* Tailwind's slate-200 */
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600; /* semi-bold */
+            transition: background-color 0.2s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        summary:hover {
+            background-color: #cbd5e1; /* Tailwind's slate-300 */
+        }
+        details[open] summary {
+            background-color: #94a3b8; /* Tailwind's slate-400 */
+            color: #f8fafc; /* Tailwind's gray-50 */
+        }
+        details[open] summary svg {
+            transform: rotate(90deg);
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #ffffff;
+            border-right: 1px solid #e2e8f0;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); /* Tailwind shadow-md */
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+        }
+        .sidebar a {
+            display: block;
+            padding: 0.5rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.375rem; /* rounded-md */
+            color: #475569; /* Tailwind's slate-600 */
+            text-decoration: none;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .sidebar a:hover {
+            background-color: #f1f5f9; /* Tailwind's slate-100 */
+        }
+        .section-title {
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 700; /* font-bold */
+            color: #1e293b; /* Tailwind's slate-900 */
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e2e8f0; /* Tailwind's slate-200 */
+        }
+        .endpoint-method {
+            font-weight: 700;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            color: white;
+            margin-right: 0.5rem;
+            display: inline-block;
+            font-size: 0.75rem; /* text-xs */
+        }
+        .method-GET { background-color: #22c55e; /* green-500 */ }
+        .method-POST { background-color: #3b82f6; /* blue-500 */ }
+        .method-PUT { background-color: #f97316; /* orange-500 */ }
+        .method-DELETE { background-color: #ef4444; /* red-500 */ }
+        .method-PATCH { background-color: #a855f7; /* purple-500 */ }
+
+        .response-code {
+            font-weight: 700;
+            padding: 0.1rem 0.4rem;
+            border-radius: 0.375rem;
+            color: white;
+            margin-left: 0.5rem;
+            display: inline-block;
+            font-size: 0.75rem;
+        }
+        .code-200 { background-color: #22c55e; } /* green-500 */
+        .code-201 { background-color: #3b82f6; } /* blue-500 */
+        .code-400 { background-color: #f97316; } /* orange-500 */
+        .code-401 { background-color: #ef4444; } /* red-500 */
+        .code-403 { background-color: #f59e0b; } /* amber-500 */
+        .code-404 { background-color: #64748b; } /* slate-500 */
+        .code-405 { background-color: #0f172a; } /* slate-900 */
+        .code-500 { background-color: #7f1d1d; } /* red-800 */
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+                padding: 1rem;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h1 class="text-2xl font-bold text-slate-800 mb-6">UPA Dashboard API</h1>
+        <nav>
+            <a href="#estrutura-do-projeto" class="rounded-md hover:bg-slate-100">Estrutura do Projeto</a>
+            <a href="#principais-funcionalidades" class="rounded-md hover:bg-slate-100">Principais Funcionalidades</a>
+            <a href="#arquitetura-tecnica" class="rounded-md hover:bg-slate-100">Arquitetura Técnica</a>
+            <a href="#endpoints-api" class="rounded-md hover:bg-slate-100">Endpoints API</a>
+            <ul class="ml-4 list-none p-0">
+                <li><a href="#autenticacao" class="text-slate-700 hover:bg-slate-100">Autenticação</a></li>
+                <li><a href="#usuarios" class="text-slate-700 hover:bg-slate-100">Usuários</a></li>
+                <li><a href="#fluxo-recuperacao-senha" class="text-slate-700 hover:bg-slate-100">Fluxo Recuperação Senha</a></li>
+                <li><a href="#dados-upa" class="text-slate-700 hover:bg-slate-100">Dados UPA</a></li>
+                <li><a href="#predicao" class="text-slate-700 hover:bg-slate-100">Predição</a></li>
+                <li><a href="#informacao-e-auditoria" class="text-slate-700 hover:bg-slate-100">Informação e Auditoria</a></li>
+                <li><a href="#informacoes-maquina" class="text-slate-700 hover:bg-slate-100">Informações da Máquina</a></li>
+            </ul>
+            <a href="#codigos-de-erro-padrao" class="rounded-md hover:bg-slate-100">Códigos de Erro Padrão</a>
+            <a href="#estrutura-de-resposta-de-sucesso" class="rounded-md hover:bg-slate-100">Estrutura de Resposta de Sucesso</a>
+            <a href="#seguranca" class="rounded-md hover:bg-slate-100">Segurança</a>
+            <a href="#como-executar" class="rounded-md hover:bg-slate-100">Como Executar</a>
+            <a href="#desenvolvimento" class="rounded-md hover:bg-slate-100">Desenvolvimento</a>
+            <a href="#autor" class="rounded-md hover:bg-slate-100">Autor</a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <h1 class="section-title">UPA Dashboard API</h1>
+        <p class="mb-6 text-lg">API para o sistema de Dashboard UPA - Uma API Rust com recursos de processamento de dados, autenticação, visualização de gráficos e integração com modelos de aprendizado de máquina.</p>
+
+        <section id="estrutura-do-projeto" class="mb-12">
+            <h2 class="text-3xl font-semibold text-slate-800 mb-4">Estrutura do Projeto</h2>
+            <p class="mb-4">A API segue uma arquitetura em camadas baseada nos princípios de Clean Architecture:</p>
+            <pre><code>src/
+├── adapters/            # Implementações de interfaces (portas)
+├── application/         # Serviços de aplicação (casos de uso)
+├── domain/              # Modelos de domínio e interfaces de repositório
+├── handlers/            # Manipuladores HTTP para tratamento de requisições
+├── infrastructure/      # Implementação de persistência e serviços externos
+├── middleware/          # Middleware (autenticação, auditoria, logging)
+├── routes/              # Definição de rotas da API
+└── utils/               # Utilitários diversos
+
+ml_models_api/           # Serviço Python para modelos de ML
+</code></pre>
+        </section>
+
+        <section id="principais-funcionalidades" class="mb-12">
+            <h2 class="text-3xl font-semibold text-slate-800 mb-4">Principais Funcionalidades</h2>
+            <ul class="list-disc list-inside text-lg space-y-2">
+                <li><strong class="text-slate-700">1. Autenticação</strong>
+                    <ul class="list-disc list-inside ml-6 text-base">
+                        <li>Login com email/senha (<code class="font-mono">/api/auth/login</code>)</li>
+                        <li>Login com sistema Pronto (<code class="font-mono">/api/auth/login-pronto</code>)</li>
+                        <li>Middleware JWT para proteção de rotas</li>
+                    </ul>
+                </li>
+                <li><strong class="text-slate-700">2. Gestão de Usuários</strong>
+                    <ul class="list-disc list-inside ml-6 text-base">
+                        <li>CRUD completo de usuários</li>
+                        <li>Gestão de permissões e aplicações</li>
+                        <li>Recuperação de senha com código de verificação</li>
+                        <li>Feedback para modelos de predição</li>
+                    </ul>
+                </li>
+                <li><strong class="text-slate-700">3. Dados UPA</strong>
+                    <ul class="list-disc list-inside ml-6 text-base">
+                        <li>Upload e processamento de dados</li>
+                        <li>Visualizações diversas para o dashboard
+                            <ul class="list-disc list-inside ml-6 text-base">
+                                <li>Consultas por mês/ano</li>
+                                <li>Distribuição por faixa etária</li>
+                                <li>Atendimentos por fluxo</li>
+                                <li>Mapas de calor para doenças e atendimentos por bairro</li>
+                                <li>Estatísticas de atendimento por profissional</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li><strong class="text-slate-700">4. Predição e ML</strong>
+                    <ul class="list-disc list-inside ml-6 text-base">
+                        <li>Integração com serviço Python separado para ML</li>
+                        <li>Predição de doenças respiratórias</li>
+                        <li>Detecção de câncer de mama</li>
+                        <li>Predição de tuberculose</li>
+                    </ul>
+                </li>
+                <li><strong class="text-slate-700">5. Informações e Auditoria</strong>
+                    <ul class="list-disc list-inside ml-6 text-base">
+                        <li>Registro de ações dos usuários</li>
+                        <li>Métricas do sistema e da máquina</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section id="arquitetura-tecnica" class="mb-12">
+            <h2 class="text-3xl font-semibold text-slate-800 mb-4">Arquitetura Técnica</h2>
+            <h3 class="text-2xl font-semibold text-slate-700 mb-3">Camadas Principais</h3>
+            <ol class="list-decimal list-inside text-lg space-y-2 mb-6">
+                <li><strong>Handlers</strong>: Recebem requisições HTTP, validam parâmetros, delegam para serviços e formatam respostas.</li>
+                <li><strong>Services (Application)</strong>: Implementam a lógica de negócios, coordenam chamadas a repositories.</li>
+                <li><strong>Repositories</strong>: Abstraem o acesso a dados, permitem interações com banco de dados.</li>
+                <li><strong>Domain Models</strong>: Definem estruturas de dados e regras de negócio.</li>
+                <li><strong>Middleware</strong>: Funções que interceptam e processam requisições (auth, auditoria, logging).</li>
+            </ol>
+            <h3 class="text-2xl font-semibold text-slate-700 mb-3">Tecnologias Utilizadas</h3>
+            <ul class="list-disc list-inside text-lg space-y-2">
+                <li><strong class="text-slate-700">Backend Rust</strong>:
+                    <ul class="list-disc list-inside ml-6 text-base">
+                        <li>Actix-web: Framework web</li>
+                        <li>Tokio: Runtime assíncrono</li>
+                        <li>sqlx: Biblioteca de banco de dados assíncrona</li>
+                        <li>serde: Serialização/desserialização</li>
+                        <li>jsonwebtoken: Autenticação JWT</li>
+                        <li>chrono: Manipulação de datas e horas</li>
+                        <li>uuid: Geração de identificadores únicos</li>
+                    </ul>
+                </li>
+                <li><strong class="text-slate-700">Serviço ML (Python)</strong>:
+                    <ul class="list-disc list-inside ml-6 text-base">
+                        <li>FastAPI: Framework web</li>
+                        <li>Modelos de predição para doenças respiratórias e tuberculose</li>
+                        <li>Modelo de detecção para câncer de mama</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section id="endpoints-api" class="mb-12">
+            <h2 class="section-title">Endpoints API</h2>
+
+            <h3 id="autenticacao" class="text-2xl font-semibold text-slate-800 mb-4">Autenticação</h3>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-POST">POST</span> /api/auth/login
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Autentica usuário com email e senha, retornando token JWT</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Público</p>
+                    <p class="font-semibold text-slate-700">Corpo da requisição:</p>
+                    <pre><code>{
+  "email": "usuario@exemplo.com",
+  "password": "senha123"
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+  "user_id": "abb63cbe-e8ba-4ca8-9e9d-ede6f674eb648",
+  "full_name": "Diogo Ribeiro",
+  "email": "diogoifroads@gmail.com",
+  "profile": "Administrador",
+  "allowed_applications": [
+      "upavision"
+  ],
+  "allowed_health_units": [
+      2,
+      3
+  ]
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de credenciais inválidas <span class="response-code code-401">401 UNAUTHORIZED</span>:</p>
+                    <pre><code>{
+  "error": "Unauthorized",
+  "message": "Unauthorized: Invalid credentials",
+  "status_code": 401
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-POST">POST</span> /api/auth/login-pronto
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Autentica usuário via sistema Pronto, retornando token JWT e unidades de saúde permitidas</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Público</p>
+                    <p class="font-semibold text-slate-700">Corpo da requisição:</p>
+                    <pre><code>{
+  "username": "usuario123",
+  "password": "senha123"
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "data": {
+      "allowed_applications": [
+          "xpredict"
+      ],
+      "allowed_health_units": [
+          2
+      ],
+      "full_name": "DIOGO RIBEIRO",
+      "profile": "Usuario Comum",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+      "user_id": "4347000200000024"
+  },
+  "message": "Operation successful",
+  "status": 200
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de credenciais inválidas <span class="response-code code-401">401 UNAUTHORIZED</span>:</p>
+                    <pre><code>{
+  "error": "Unauthorized",
+  "message": "Unauthorized: Incorrect password",
+  "status_code": 401
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso do usuário PRONTO não ser médico <span class="response-code code-403">403 FORBIDDEN</span>:</p>
+                    <pre><code>{
+  "error": "Forbidden",
+  "message": "Forbidden: User does not have the required profile",
+  "status_code": 403
+}</code></pre>
+                </div>
+            </details>
+
+            <h3 id="usuarios" class="text-2xl font-semibold text-slate-800 mb-4 mt-8">Usuários</h3>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-GET">GET</span> /api/users
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Retorna lista de todos os usuários cadastrados</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "data": [
+      {
+          "allowed_applications": [
+              "upavision",
+              "xpredict"
+          ],
+          "allowed_health_units": [
+              2
+          ],
+          "email": "fulano@gmail.com",
+          "enabled": true,
+          "full_name": "fulando de tal",
+          "id": "8c15eb84-6e6e-455e-9c86-a8f4864b9e78",
+          "profile": "Administrador"
+      },
+      {
+          "allowed_applications": [
+              "upavision"
+          ],
+          "allowed_health_units": [
+              2
+          ],
+          "email": "beltrano@hotmail.com.br",
+          "enabled": true,
+          "full_name": "baltrano de tal",
+          "id": "ccba2604-02ff-40cc-afa8-c1a0bbb7bb10",
+          "profile": "Usuario Comum"
+      }
+  ],
+  "message": "Operation successful",
+  "status": 200
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-POST">POST</span> /api/users
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Cria novo usuário com perfil e aplicações permitidas</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Administrador</p>
+                    <p class="font-semibold text-slate-700">Corpo da requisição:</p>
+                    <pre><code>{
+  "full_name": "João Silva",
+  "email": "joao.silva@exemplo.com",
+  "password": "senha123",
+  "profile": "Administrador", // Valores: "Administrador" ou "Usuario Comum"
+  "allowed_applications": ["xpredict", "upavision"],
+  "allowed_health_units": [1, 2, 3]
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-201">201 CREATED</span>:</p>
+                    <pre><code>{
+  "message": "Resource created successfully",
+  "status": 201,
+  "data": {
+    "id": "abb63cbe-e8ba-4ca8-9e9d-ede6f674eb648",
+    "full_name": "João Silva",
+    "email": "joao.silva@exemplo.com",
+    "profile": "Administrador",
+    "allowed_applications": ["xpredict", "upavision"],
+    "allowed_health_units": [1, 2, 3],
+    "enabled": true
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de email já existente <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error adding user: email 'joao.silva@exemplo.com' already exists",
+  "status_code": 400
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de email inválido <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error adding user: 'email-invalido' is not a valid email",
+  "status_code": 400
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-GET">GET</span> /api/users/{id}
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Retorna dados de um usuário específico</p>
+                    <p class="mb-2"><strong class="text-slate-700">Parâmetros de rota:</strong> <code class="font-mono">id</code> (UUID do usuário)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": {
+    "id": "abb63cbe-e8ba-4ca8-9e9d-ede6f674eb648",
+    "full_name": "João Silva",
+    "email": "joao.silva@exemplo.com",
+    "profile": "Administrador",
+    "allowed_applications": ["xpredict", "upavision"],
+    "allowed_health_units": [1, 2, 3],
+    "enabled": true
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de usuário não encontrado <span class="response-code code-404">404 NOT FOUND</span>:</p>
+                    <pre><code>{
+  "message": "User not found",
+  "status": 404,
+  "data": null
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-PUT">PUT</span> /api/users/{id}
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Atualiza dados de um usuário específico</p>
+                    <p class="mb-2"><strong class="text-slate-700">Parâmetros de rota:</strong> <code class="font-mono">id</code> (UUID do usuário)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Administrador</p>
+                    <p class="font-semibold text-slate-700">Corpo da requisição:</p>
+                    <pre><code>{
+  "full_name": "João Silva Atualizado",
+  "email": "joao.silva@exemplo.com",
+  "profile": "Usuario Comum",
+  "allowed_applications": ["upavision"],
+  "allowed_health_units": [1, 2]
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Resource updated successfully",
+  "status": 200,
+  "data": {
+    "id": "abb63cbe-e8ba-4ca8-9e9d-ede6f674eb648",
+    "full_name": "João Silva Atualizado",
+    "email": "joao.silva@exemplo.com",
+    "profile": "Usuario Comum",
+    "allowed_applications": ["upavision"],
+    "allowed_health_units": [1, 2],
+    "enabled": true
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de usuário não encontrado <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error updating user: user with id 'abb63cbe-e8ba-4ca8-9e9d-ede6f674eb648' not found",
+  "status_code": 400
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-DELETE">DELETE</span> /api/users/{id}
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Remove um usuário específico</p>
+                    <p class="mb-2"><strong class="text-slate-700">Parâmetros de rota:</strong> <code class="font-mono">id</code> (UUID do usuário)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Resource deleted successfully",
+  "status": 200,
+  "data": null
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de usuário não encontrado <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error deleting user: user with id 'abb63cbe-e8ba-4ca8-9e9d-ede6f674eb648' not found",
+  "status_code": 400
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-POST">POST</span> /api/users/send-verification-code/{email}
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Envia código de verificação para reset de senha</p>
+                    <p class="mb-2"><strong class="text-slate-700">Parâmetros de rota:</strong> <code class="font-mono">email</code> (email do usuário)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Público</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-201">201 CREATED</span>:</p>
+                    <pre><code>{
+  "message": "Resource created successfully",
+  "status": 201,
+  "data": {
+    "id_verification": "123e4567-e89b-12d3-a456-426614174000",
+    "user_id": "abb63cbe-e8ba-4ca8-9e9d-ede6f674eb648",
+    "email": "joao.silva@exemplo.com",
+    "verification_code": 123456,
+    "used": false,
+    "created_at": "2024-03-15T14:30:25Z",
+    "expiration_at": "2024-03-15T14:40:25Z"
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de email inválido <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error adding user: 'email-invalido' is not a valid email",
+  "status_code": 400
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de usuário não encontrado <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: User not found",
+  "status_code": 400
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de usuário desabilitado <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: User disabled",
+  "status_code": 400
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-POST">POST</span> /api/users/resend-verification-code/{email}
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Reenvia código de verificação para email</p>
+                    <p class="mb-2"><strong class="text-slate-700">Parâmetros de rota:</strong> <code class="font-mono">email</code> (email do usuário)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Público</p>
+                    <p class="font-semibold text-slate-700">Corpo da requisição:</p>
+                    <pre><code>{
+  "id_verification": "123e4567-e89b-12d3-a456-426614174000"
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de código ainda válido (reenvia o mesmo) <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": {
+    "id_verification": "123e4567-e89b-12d3-a456-426614174000",
+    "user_id": "abb63cbe-e8ba-4ca8-9e9d-ede6f674eb648",
+    "email": "joao.silva@exemplo.com",
+    "verification_code": 123456,
+    "used": false,
+    "created_at": "2024-03-15T14:30:25Z",
+    "expiration_at": "2024-03-15T14:40:25Z"
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de código expirado (gera novo) <span class="response-code code-201">201 CREATED</span>:</p>
+                    <pre><code>{
+  "message": "Resource created successfully",
+  "status": 201,
+  "data": {
+    "id_verification": "123e4567-e89b-12d3-a456-426614174000",
+    "user_id": "abb63cbe-e8ba-4ca8-9e9d-ede6f674eb648",
+    "email": "joao.silva@exemplo.com",
+    "verification_code": 654321,
+    "used": false,
+    "created_at": "2024-03-15T15:00:25Z",
+    "expiration_at": "2024-03-15T15:10:25Z"
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de usuário não encontrado <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: User not found",
+  "status_code": 400
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-POST">POST</span> /api/users/confirm-verification-code
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Confirma código de verificação recebido por email</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Público</p>
+                    <p class="font-semibold text-slate-700">Corpo da requisição:</p>
+                    <pre><code>{
+  "verification_code": 123456,
+  "id_verification": "123e4567-e89b-12d3-a456-426614174000"
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": {
+    "id_verification": "123e4567-e89b-12d3-a456-426614174000",
+    "used": true,
+    "updated_at": "2024-03-15T14:35:25Z"
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de ID de verificação não encontrado <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Id verification not found",
+  "status_code": 400
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de código incorreto <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Verification code not matched",
+  "status_code": 400
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de código já utilizado <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Code already used",
+  "status_code": 400
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de código expirado <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Code expired",
+  "status_code": 400
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-PATCH">PATCH</span> /api/users/update-password-for-forgetting-user/{id}
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Atualiza senha para usuário que esqueceu, após verificação (requer código confirmado)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Parâmetros de rota:</strong> <code class="font-mono">id</code> (UUID do usuário)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Público</p>
+                    <p class="font-semibold text-slate-700">Corpo da requisição:</p>
+                    <pre><code>{
+  "new_password": "novaSenha123",
+  "id_verification": "123e4567-e89b-12d3-a456-426614174000"
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": {
+    "user_id": "abb63cbe-e8ba-4ca8-9e9d-ede6f674eb648",
+    "password_updated": true,
+    "updated_at": "2024-03-15T14:40:25Z"
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de usuário não encontrado <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: User not found",
+  "status_code": 400
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de ID de verificação não encontrado <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Id verification not found",
+  "status_code": 400
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de código não verificado <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Code not verified",
+  "status_code": 400
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-PATCH">PATCH</span> /api/users/update-password-by-user-common/{id}
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Permite usuário atualizar sua própria senha (requer conhecimento da senha atual)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Parâmetros de rota:</strong> <code class="font-mono">id</code> (UUID do usuário)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Usuário Comum ou Administrador</p>
+                    <p class="font-semibold text-slate-700">Corpo da requisição:</p>
+                    <pre><code>{
+  "current_password": "senha123",
+  "new_password": "novaSenha123"
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Resource updated successfully",
+  "status": 200,
+  "data": null
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de campo vazio <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error updating password: current_password cannot be empty",
+  "status_code": 400
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de usuário não encontrado <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error updating password: user with id 'abb63cbe-e8ba-4ca8-9e9d-ede6f674eb648' not found",
+  "status_code": 400
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de senha atual incorreta <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error updating password: current password is incorrect",
+  "status_code": 400
+}</code></pre>
+                </div>
+            </details>
+
+            <h3 id="fluxo-recuperacao-senha" class="text-2xl font-semibold text-slate-800 mb-4 mt-8">Fluxo de Recuperação de Senha</h3>
+            <p class="mb-4">Para recuperar a senha, o usuário deve seguir este fluxo sequencial:</p>
+            <ol class="list-decimal list-inside text-lg space-y-2 mb-6">
+                <li><strong>Solicitar código de verificação</strong> via <code class="font-mono">send-verification-code/{email}</code>
+                    <ul class="list-disc list-inside ml-6 text-base">
+                        <li>Retorna <code class="font-mono">id_verification</code> que será usado nas próximas etapas</li>
+                        <li>Código expira em 10 minutos</li>
+                        <li>Email é enviado com código de 6 dígitos</li>
+                    </ul>
+                </li>
+                <li><strong>Confirmar código recebido</strong> via <code class="font-mono">confirm-verification-code</code>
+                    <ul class="list-disc list-inside ml-6 text-base">
+                        <li>Utiliza o <code class="font-mono">verification_code</code> recebido por email</li>
+                        <li>Utiliza o <code class="font-mono">id_verification</code> da etapa anterior</li>
+                        <li>Marca o código como "usado" (validação para próxima etapa)</li>
+                    </ul>
+                </li>
+                <li><strong>Atualizar senha</strong> via <code class="font-mono">update-password-for-forgetting-user/{id}</code>
+                    <ul class="list-disc list-inside ml-6 text-base">
+                        <li>Utiliza o mesmo <code class="font-mono">id_verification</code> (deve estar marcado como "usado")</li>
+                        <li>Define a nova senha</li>
+                    </ul>
+                </li>
+            </ol>
+            <p class="font-semibold text-slate-700 mb-2">Observações importantes:</p>
+            <ul class="list-disc list-inside text-lg space-y-1 mb-6">
+                <li>Cada etapa valida a anterior</li>
+                <li>O código só pode ser usado uma vez</li>
+                <li>Se o código expirar, use <code class="font-mono">resend-verification-code</code> para gerar um novo</li>
+                <li>O fluxo de "usuário comum" (<code class="font-mono">update-password-by-user-common</code>) é independente e requer a senha atual</li>
+            </ul>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-POST">POST</span> /api/users/feedback-respiratory-diseases
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Registra feedback sobre predição de doenças respiratórias</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Usuário Comum ou Administrador</p>
+                    <p class="font-semibold text-slate-700">Corpo da requisição:</p>
+                    <pre><code>{
+  "user_name": "João Silva",
+  "feedback": "sim", // Valores: "sim" ou "não"
+  "prediction_made": "pneumonia viral", // Valores: "normal", "covid-19", "pneumonia viral", "pneumonia bacteriana"
+  "correct_prediction": "pneumonia viral" // Valores: "normal", "covid-19", "pneumonia viral", "pneumonia bacteriana"
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-201">201 CREATED</span>:</p>
+                    <pre><code>{
+  "message": "Resource created successfully",
+  "status": 201,
+  "data": {
+    "id": "abb63cbe-e8ba-4ca8-9e9d-ede6f674eb648",
+    "user_name": "João Silva",
+    "feedback": "sim",
+    "prediction_made": "pneumonia viral",
+    "correct_prediction": "pneumonia viral"
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de campo vazio <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error creating feedback: user_name cannot be empty",
+  "status_code": 400
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de feedback inválido <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error: 'talvez' is not a valid feedback. Allowed values are: sim, não",
+  "status_code": 400
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de doença inválida <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error: 'gripe' is not a respiratory diseases. Allowed values are: normal, covid-19, pneumonia viral, pneumonia bacteriana",
+  "status_code": 400
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-POST">POST</span> /api/users/feedback-tuberculosis
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Registra feedback sobre predição de tuberculose</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Usuário Comum ou Administrador</p>
+                    <p class="font-semibold text-slate-700">Corpo da requisição:</p>
+                    <pre><code>{
+  "user_name": "João Silva",
+  "feedback": "sim" // Valores: "sim" ou "não"
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-201">201 CREATED</span>:</p>
+                    <pre><code>{
+  "message": "Resource created successfully",
+  "status": 201,
+  "data": {
+    "id": "abb63cbe-e8ba-4ca8-9e9d-ede6f674eb648",
+    "user_name": "João Silva",
+    "feedback": "sim"
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de campo vazio <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error creating feedback: user_name cannot be empty",
+  "status_code": 400
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de feedback inválido <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error: 'talvez' is not a valid feedback. Allowed values are: sim, não",
+  "status_code": 400
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-POST">POST</span> /api/users/feedback-osteoporosis
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Registra feedback sobre predição de osteoporose</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Usuário Comum ou Administrador</p>
+                    <p class="font-semibold text-slate-700">Corpo da requisição:</p>
+                    <pre><code>{
+  "user_name": "João Silva",
+  "feedback": "sim", // Valores: "sim" ou "não"
+  "prediction_made": "osteopenia", // Valores: "normal", "osteopenia", "osteoporosis"
+  "correct_prediction": "osteopenia" // Valores: "normal", "osteopenia", "osteoporosis"
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-201">201 CREATED</span>:</p>
+                    <pre><code>{
+  "message": "Resource created successfully",
+  "status": 201,
+  "data": {
+    "id": "abb63cbe-e8ba-4ca8-9e9d-ede6f674eb648",
+    "user_name": "João Silva",
+    "feedback": "sim",
+    "prediction_made": "osteopenia",
+    "correct_prediction": "osteopenia"
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de campo vazio <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error creating feedback: user_name cannot be empty",
+  "status_code": 400
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de predição inválida <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error: 'artrose' is not a valid feedback for osteoporosis. Allowed values are: osteopenia, osteoporosis, normal",
+  "status_code": 400
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-GET">GET</span> /api/users/feedbacks
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Retorna estatísticas processadas de todos os feedbacks registrados</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": {
+    "feedbacks_respiratory_diseases": {
+      "normal": {
+        "total_quantity": 15,
+        "total_quantity_correct": 12
+      },
+      "covid-19": {
+        "total_quantity": 8,
+        "total_quantity_correct": 6
+      },
+      "pneumonia viral": {
+        "total_quantity": 10,
+        "total_quantity_correct": 8
+      },
+      "pneumonia bacteriana": {
+        "total_quantity": 5,
+        "total_quantity_correct": 4
+      }
+    },
+    "feedbacks_tuberculosis": {
+      "total_quantity": 20,
+      "total_quantity_correct": 18
+    },
+    "feedbacks_osteoporosis": {
+      "osteopenia": {
+        "total_quantity": 12,
+        "total_quantity_correct": 10
+      },
+      "osteoporosis": {
+        "total_quantity": 8,
+        "total_quantity_correct": 7
+      },
+      "normal": {
+        "total_quantity": 25,
+        "total_quantity_correct": 23
+      }
+    }
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de feedbacks não encontrados <span class="response-code code-404">404 NOT FOUND</span>:</p>
+                    <pre><code>{
+  "message": "Feedbacks not found",
+  "status": 404,
+  "data": null
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-PATCH">PATCH</span> /api/users/{id}/update-password-by-admin
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Permite administrador atualizar senha de qualquer usuário</p>
+                    <p class="mb-2"><strong class="text-slate-700">Parâmetros de rota:</strong> <code class="font-mono">id</code> (UUID do usuário)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Administrador</p>
+                    <p class="font-semibold text-slate-700">Corpo da requisição:</p>
+                    <pre><code>{
+  "email": "joao.silva@exemplo.com",
+  "new_password": "novaSenha123"
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Resource updated successfully",
+  "status": 200,
+  "data": null
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de campo vazio <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error updating password: email cannot be empty",
+  "status_code": 400
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de usuário não encontrado <span class="response-code code-404">404 NOT FOUND</span>:</p>
+                    <pre><code>{
+  "message": "User not found",
+  "status": 404,
+  "data": null
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-POST">POST</span> /api/users/{id}/applications
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Adiciona aplicações ao usuário especificado</p>
+                    <p class="mb-2"><strong class="text-slate-700">Parâmetros de rota:</strong> <code class="font-mono">id</code> (UUID do usuário)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Administrador</p>
+                    <p class="font-semibold text-slate-700">Corpo da requisição:</p>
+                    <pre><code>{
+  "applications_name": ["xpredict", "upavision"]
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": {
+    "id": "abb63cbe-e8ba-4ca8-9e9d-ede6f674eb648",
+    "full_name": "João Silva",
+    "email": "joao.silva@exemplo.com",
+    "profile": "Administrador",
+    "allowed_applications": ["xpredict", "upavision"],
+    "allowed_health_units": [1, 2, 3],
+    "enabled": true
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de usuário não encontrado <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error adding application: user with id 'abb63cbe-e8ba-4ca8-9e9d-ede6f674eb648' not found",
+  "status_code": 400
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de aplicação inválida <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error: 'app_invalida' is not a valid application. Allowed values are: xpredict, upavision",
+  "status_code": 400
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de aplicação já existente <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error adding application: application 'xpredict' already exists",
+  "status_code": 400
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-DELETE">DELETE</span> /api/users/{id}/application/{application_name}
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Remove uma aplicação específica do usuário</p>
+                    <p class="mb-2"><strong class="text-slate-700">Parâmetros de rota:</strong> <code class="font-mono">id</code> (UUID do usuário), <code class="font-mono">application_name</code> (nome da aplicação)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Resource deleted successfully",
+  "status": 200,
+  "data": null
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de usuário não encontrado <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error deleting application: user with id 'abb63cbe-e8ba-4ca8-9e9d-ede6f674eb648' not found",
+  "status_code": 400
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de aplicação não encontrada no usuário <span class="response-code code-404">404 NOT FOUND</span>:</p>
+                    <pre><code>{
+  "message": "Application not found",
+  "status": 404,
+  "data": null
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de última aplicação <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error deleting application: user must have at least one allowed application",
+  "status_code": 400
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-PATCH">PATCH</span> /api/users/{id}/update-enabled
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Ativa ou desativa um usuário específico</p>
+                    <p class="mb-2"><strong class="text-slate-700">Parâmetros de rota:</strong> <code class="font-mono">id</code> (UUID do usuário)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Administrador</p>
+                    <p class="font-semibold text-slate-700">Corpo da requisição:</p>
+                    <pre><code>{
+  "enabled": true
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Resource updated successfully",
+  "status": 200,
+  "data": null
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de usuário não encontrado <span class="response-code code-404">404 NOT FOUND</span>:</p>
+                    <pre><code>{
+  "message": "User not found",
+  "status": 404,
+  "data": null
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-POST">POST</span> /api/users/{id}/health-units
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Adiciona unidades de saúde permitidas ao usuário</p>
+                    <p class="mb-2"><strong class="text-slate-700">Parâmetros de rota:</strong> <code class="font-mono">id</code> (UUID do usuário)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Administrador</p>
+                    <p class="font-semibold text-slate-700">Corpo da requisição:</p>
+                    <pre><code>{
+  "health_units": [1, 2, 3]
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": {
+    "id": "abb63cbe-e8ba-4ca8-9e9d-ede6f674eb648",
+    "full_name": "João Silva",
+    "email": "joao.silva@exemplo.com",
+    "profile": "Administrador",
+    "allowed_applications": ["xpredict", "upavision"],
+    "allowed_health_units": [1, 2, 3],
+    "enabled": true
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de usuário não encontrado <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error adding health units: user with id 'abb63cbe-e8ba-4ca8-9e9d-ede6f674eb648' not found",
+  "status_code": 400
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de lista vazia <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error adding health units: health_units list cannot be empty",
+  "status_code": 400
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de unidade inexistente <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error adding health units: health unit with id '999' does not exist",
+  "status_code": 400
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de unidade já existente <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error adding health units: health unit with id '2' already exists",
+  "status_code": 400
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-DELETE">DELETE</span> /api/users/{id}/health-unit/{health_unit_id}
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Remove uma unidade de saúde específica do usuário</p>
+                    <p class="mb-2"><strong class="text-slate-700">Parâmetros de rota:</strong> <code class="font-mono">id</code> (UUID do usuário), <code class="font-mono">health_unit_id</code> (ID da unidade de saúde)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Resource deleted successfully",
+  "status": 200,
+  "data": null
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de usuário não encontrado <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error deleting health unit: user with id 'abb63cbe-e8ba-4ca8-9e9d-ede6f674eb648' not found",
+  "status_code": 400
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de última unidade <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error deleting health unit: user must have at least one health unit",
+  "status_code": 400
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de usuário sem acesso à unidade <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Error deleting health unit: user does not have access to health unit with id '3'",
+  "status_code": 400
+}</code></pre>
+                </div>
+            </details>
+
+
+            <h3 id="dados-upa" class="text-2xl font-semibold text-slate-800 mb-4 mt-8">Dados UPA</h3>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-POST">POST</span> /api/data/add-file
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Faz upload e processa arquivo de dados para o sistema</p>
+                    <p class="mb-2"><strong class="text-slate-700">Corpo da requisição:</strong> Multipart form com arquivo CSV/Excel</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-201">201 CREATED</span>:</p>
+                    <pre><code>{
+  "message": "Resource created successfully",
+  "status": 201,
+  "data": {
+    "message": "Dados processados e importados com sucesso",
+    "rows_processed": 1500,
+    "columns_processed": 15,
+    "competencia_values": ["2024-01", "2024-02", "2024-03"]
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de nenhum arquivo enviado <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Nenhum arquivo foi enviado",
+  "status_code": 400
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de dados duplicados <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Dados do período 2024-01 já existem no banco",
+  "status_code": 400
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-GET">GET</span> /api/data/update-graph-data
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Processa os dados brutos para gerar visualizações em gráficos</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": {
+    "message": "Dados do gráfico atualizados com sucesso",
+    "updated_at": "2024-03-15T16:00:00Z"
+  }
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-GET">GET</span> /api/data/available-health-units
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Retorna lista de unidades de saúde disponíveis no sistema</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": [
+    {
+      "id": 2,
+      "name": "UPA ARIQUEMES"
+    },
+    {
+      "id": 3,
+      "name": "UPA JARU"
+    }
+  ]
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-GET">GET</span> /api/data/user/{user_id}/unit/{unidade_id}/number-of-appointments-per-month
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Retorna quantidade de atendimentos agregados por mês</p>
+                    <p class="mb-2"><strong class="text-slate-700">Parâmetros de rota:</strong> <code class="font-mono">user_id</code> (ID do usuário), <code class="font-mono">unidade_id</code> (ID da unidade)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Usuário Comum ou Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": {
+    "2024-01": 1250,
+    "2024-02": 1180,
+    "2024-03": 1320,
+    "2024-04": 1095
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de usuário sem acesso à unidade <span class="response-code code-403">403 FORBIDDEN</span>:</p>
+                    <pre><code>{
+  "error": "Forbidden",
+  "message": "Forbidden: User does not have access to unit 2",
+  "status_code": 403
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de dados não encontrados <span class="response-code code-404">404 NOT FOUND</span>:</p>
+                    <pre><code>{
+  "error": "Not Found",
+  "message": "Not Found: Não há dados processados para a unidade 2 em visualization_data_graph",
+  "status_code": 404
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-GET">GET</span> /api/data/user/{user_id}/unit/{unidade_id}/number-of-appointments-per-year/{year}
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Retorna atendimentos mensais para um ano específico</p>
+                    <p class="mb-2"><strong class="text-slate-700">Parâmetros de rota:</strong> <code class="font-mono">user_id</code> (ID do usuário), <code class="font-mono">unidade_id</code> (ID da unidade), <code class="font-mono">year</code> (ano)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Usuário Comum ou Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": {
+    "Janeiro": 1250,
+    "Fevereiro": 1180,
+    "Março": 1320,
+    "Abril": 1095,
+    "Maio": 1400,
+    "Junho": 1350,
+    "Julho": 1200,
+    "Agosto": 1100,
+    "Setembro": 1280,
+    "Outubro": 1300,
+    "Novembro": 1150,
+    "Dezembro": 1000
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de usuário sem acesso à unidade <span class="response-code code-403">403 FORBIDDEN</span>:</p>
+                    <pre><code>{
+  "error": "Forbidden",
+  "message": "Forbidden: User does not have access to unit 2",
+  "status_code": 403
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de dados não encontrados para o ano <span class="response-code code-404">404 NOT FOUND</span>:</p>
+                    <pre><code>{
+  "error": "Not Found",
+  "message": "Not Found: Não há dados processados para a unidade 2 no ano 2023",
+  "status_code": 404
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-GET">GET</span> /api/data/user/{user_id}/unit/{unidade_id}/years-available-for-number-of-appointments-per-month
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Retorna lista de anos disponíveis para consulta</p>
+                    <p class="mb-2"><strong class="text-slate-700">Parâmetros de rota:</strong> <code class="font-mono">user_id</code> (ID do usuário), <code class="font-mono">unidade_id</code> (ID da unidade)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Usuário Comum ou Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": [
+    2023,
+    2024
+  ]
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de usuário sem acesso à unidade <span class="response-code code-403">403 FORBIDDEN</span>:</p>
+                    <pre><code>{
+  "error": "Forbidden",
+  "message": "Forbidden: User does not have access to unit 2",
+  "status_code": 403
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de anos não disponíveis <span class="response-code code-404">404 NOT FOUND</span>:</p>
+                    <pre><code>{
+  "error": "Not Found",
+  "message": "Not Found: Nenhum ano disponível para a unidade 2",
+  "status_code": 404
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-GET">GET</span> /api/data/user/{user_id}/unit/{unidade_id}/number-of-appointments-per-flow
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Retorna quantidade de atendimentos por cada fluxo</p>
+                    <p class="mb-2"><strong class="text-slate-700">Parâmetros de rota:</strong> <code class="font-mono">user_id</code> (ID do usuário), <code class="font-mono">unidade_id</code> (ID da unidade)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Usuário Comum ou Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": {
+    "Fluxo 1": 500,
+    "Fluxo 2": 300,
+    "Fluxo 3": 250
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de usuário sem acesso à unidade <span class="response-code code-403">403 FORBIDDEN</span>:</p>
+                    <pre><code>{
+  "error": "Forbidden",
+  "message": "Forbidden: User does not have access to unit 2",
+  "status_code": 403
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de dados não encontrados <span class="response-code code-404">404 NOT FOUND</span>:</p>
+                    <pre><code>{
+  "error": "Not Found",
+  "message": "Not Found: Não há dados de fluxo para a unidade 2",
+  "status_code": 404
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-GET">GET</span> /api/data/user/{user_id}/unit/{unidade_id}/distribuition-of-patients-ages
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Retorna distribuição de pacientes por faixas etárias</p>
+                    <p class="mb-2"><strong class="text-slate-700">Parâmetros de rota:</strong> <code class="font-mono">user_id</code> (ID do usuário), <code class="font-mono">unidade_id</code> (ID da unidade)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Usuário Comum ou Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": {
+    "0-10": 150,
+    "11-20": 200,
+    "21-30": 300,
+    "31-40": 250,
+    "41-50": 180,
+    "51-60": 100,
+    "61+": 70
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de usuário sem acesso à unidade <span class="response-code code-403">403 FORBIDDEN</span>:</p>
+                    <pre><code>{
+  "error": "Forbidden",
+  "message": "Forbidden: User does not have access to unit 2",
+  "status_code": 403
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de dados não encontrados <span class="response-code code-404">404 NOT FOUND</span>:</p>
+                    <pre><code>{
+  "error": "Not Found",
+  "message": "Not Found: Não há dados de distribuição de idade para a unidade 2",
+  "status_code": 404
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-GET">GET</span> /api/data/user/{user_id}/unit/{unidade_id}/number-of-calls-per-day-of-the-week
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Retorna quantidade de chamadas agregadas por dia da semana</p>
+                    <p class="mb-2"><strong class="text-slate-700">Parâmetros de rota:</strong> <code class="font-mono">user_id</code> (ID do usuário), <code class="font-mono">unidade_id</code> (ID da unidade)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Usuário Comum ou Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": {
+    "Segunda-feira": 180,
+    "Terça-feira": 220,
+    "Quarta-feira": 190,
+    "Quinta-feira": 250,
+    "Sexta-feira": 200,
+    "Sábado": 100,
+    "Domingo": 80
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de usuário sem acesso à unidade <span class="response-code code-403">403 FORBIDDEN</span>:</p>
+                    <pre><code>{
+  "error": "Forbidden",
+  "message": "Forbidden: User does not have access to unit 2",
+  "status_code": 403
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de dados não encontrados <span class="response-code code-404">404 NOT FOUND</span>:</p>
+                    <pre><code>{
+  "error": "Not Found",
+  "message": "Not Found: Não há dados de chamadas por dia da semana para a unidade 2",
+  "status_code": 404
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-GET">GET</span> /api/data/user/{user_id}/unit/{unidade_id}/distribution-of-services-by-hour-group
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Retorna distribuição de serviços agrupados por horário</p>
+                    <p class="mb-2"><strong class="text-slate-700">Parâmetros de rota:</strong> <code class="font-mono">user_id</code> (ID do usuário), <code class="font-mono">unidade_id</code> (ID da unidade)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Usuário Comum ou Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": {
+    "00-06": 50,
+    "06-12": 300,
+    "12-18": 400,
+    "18-00": 250
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de usuário sem acesso à unidade <span class="response-code code-403">403 FORBIDDEN</span>:</p>
+                    <pre><code>{
+  "error": "Forbidden",
+  "message": "Forbidden: User does not have access to unit 2",
+  "status_code": 403
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de dados não encontrados <span class="response-code code-404">404 NOT FOUND</span>:</p>
+                    <pre><code>{
+  "error": "Not Found",
+  "message": "Not Found: Não há dados de serviços por grupo de horas para a unidade 2",
+  "status_code": 404
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-GET">GET</span> /api/data/user/{user_id}/unit/{unidade_id}/number-of-visits-per-nurse
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Retorna quantidade de visitas realizadas por cada enfermeiro</p>
+                    <p class="mb-2"><strong class="text-slate-700">Parâmetros de rota:</strong> <code class="font-mono">user_id</code> (ID do usuário), <code class="font-mono">unidade_id</code> (ID da unidade)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Usuário Comum ou Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": {
+    "Enfermeiro A": 120,
+    "Enfermeiro B": 90,
+    "Enfermeiro C": 150
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de usuário sem acesso à unidade <span class="response-code code-403">403 FORBIDDEN</span>:</p>
+                    <pre><code>{
+  "error": "Forbidden",
+  "message": "Forbidden: User does not have access to unit 2",
+  "status_code": 403
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de dados não encontrados <span class="response-code code-404">404 NOT FOUND</span>:</p>
+                    <pre><code>{
+  "error": "Not Found",
+  "message": "Not Found: Não há dados de visitas por enfermeiro para a unidade 2",
+  "status_code": 404
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-GET">GET</span> /api/data/user/{user_id}/unit/{unidade_id}/number-of-visits-per-doctor
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Retorna quantidade de visitas realizadas por cada médico</p>
+                    <p class="mb-2"><strong class="text-slate-700">Parâmetros de rota:</strong> <code class="font-mono">user_id</code> (ID do usuário), <code class="font-mono">unidade_id</code> (ID da unidade)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Usuário Comum ou Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": {
+    "Dr. X": 250,
+    "Dr. Y": 180,
+    "Dr. Z": 300
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de usuário sem acesso à unidade <span class="response-code code-403">403 FORBIDDEN</span>:</p>
+                    <pre><code>{
+  "error": "Forbidden",
+  "message": "Forbidden: User does not have access to unit 2",
+  "status_code": 403
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de dados não encontrados <span class="response-code code-404">404 NOT FOUND</span>:</p>
+                    <pre><code>{
+  "error": "Not Found",
+  "message": "Not Found: Não há dados de visitas por médico para a unidade 2",
+  "status_code": 404
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-GET">GET</span> /api/data/user/{user_id}/unit/{unidade_id}/average-time-in-minutes-per-doctor
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Retorna tempo médio de atendimento em minutos por médico</p>
+                    <p class="mb-2"><strong class="text-slate-700">Parâmetros de rota:</strong> <code class="font-mono">user_id</code> (ID do usuário), <code class="font-mono">unidade_id</code> (ID da unidade)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Usuário Comum ou Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": {
+    "Dr. X": 15.5,
+    "Dr. Y": 20.0,
+    "Dr. Z": 12.8
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de usuário sem acesso à unidade <span class="response-code code-403">403 FORBIDDEN</span>:</p>
+                    <pre><code>{
+  "error": "Forbidden",
+  "message": "Forbidden: User does not have access to unit 2",
+  "status_code": 403
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de dados não encontrados <span class="response-code code-404">404 NOT FOUND</span>:</p>
+                    <pre><code>{
+  "error": "Not Found",
+  "message": "Not Found: Não há dados de tempo médio por médico para a unidade 2",
+  "status_code": 404
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-GET">GET</span> /api/data/user/{user_id}/unit/{unidade_id}/heat-map-with-disease-indication
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Retorna dados para mapa de calor indicando doenças por região</p>
+                    <p class="mb-2"><strong class="text-slate-700">Parâmetros de rota:</strong> <code class="font-mono">user_id</code> (ID do usuário), <code class="font-mono">unidade_id</code> (ID da unidade)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Usuário Comum ou Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": [
+    { "region": "Norte", "disease": "Gripe", "count": 50 },
+    { "region": "Sul", "disease": "COVID-19", "count": 30 },
+    { "region": "Leste", "disease": "Pneumonia", "count": 70 }
+  ]
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de usuário sem acesso à unidade <span class="response-code code-403">403 FORBIDDEN</span>:</p>
+                    <pre><code>{
+  "error": "Forbidden",
+  "message": "Forbidden: User does not have access to unit 2",
+  "status_code": 403
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de dados não encontrados <span class="response-code code-404">404 NOT FOUND</span>:</p>
+                    <pre><code>{
+  "error": "Not Found",
+  "message": "Not Found: Não há dados de mapa de calor de doenças para a unidade 2",
+  "status_code": 404
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-GET">GET</span> /api/data/user/{user_id}/unit/{unidade_id}/heat-map-with-the-number-of-medical-appointments-by-neighborhood
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Retorna dados para mapa de calor com atendimentos por bairro</p>
+                    <p class="mb-2"><strong class="text-slate-700">Parâmetros de rota:</strong> <code class="font-mono">user_id</code> (ID do usuário), <code class="font-mono">unidade_id</code> (ID da unidade)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Usuário Comum ou Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": [
+    { "neighborhood": "Bairro A", "appointments": 120 },
+    { "neighborhood": "Bairro B", "appointments": 80 },
+    { "neighborhood": "Bairro C", "appointments": 150 }
+  ]
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de usuário sem acesso à unidade <span class="response-code code-403">403 FORBIDDEN</span>:</p>
+                    <pre><code>{
+  "error": "Forbidden",
+  "message": "Forbidden: User does not have access to unit 2",
+  "status_code": 403
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de dados não encontrados <span class="response-code code-404">404 NOT FOUND</span>:</p>
+                    <pre><code>{
+  "error": "Not Found",
+  "message": "Not Found: Não há dados de mapa de calor de atendimentos por bairro para a unidade 2",
+  "status_code": 404
+}</code></pre>
+                </div>
+            </details>
+
+            <h3 id="predicao" class="text-2xl font-semibold text-slate-800 mb-4 mt-8">Predição</h3>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-POST">POST</span> /api/prediction/predict
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Analisa imagem e prediz possível doença respiratória</p>
+                    <p class="mb-2"><strong class="text-slate-700">Corpo da requisição:</strong> Multipart form com imagem de raio-X torácico</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Usuário Comum ou Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": {
+    "prediction": {
+      "covid-19": 0.15,
+      "normal": 0.65,
+      "pneumonia bacteriana": 0.05,
+      "pneumonia viral": 0.15
+    }
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de nenhuma imagem enviada <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Nenhuma imagem enviada",
+  "status_code": 400
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de erro na API ML <span class="response-code code-500">500 INTERNAL SERVER ERROR</span>:</p>
+                    <pre><code>{
+  "error": "Internal Server Error",
+  "message": "Internal Server Error",
+  "status_code": 500
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-POST">POST</span> /api/prediction/detect
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Analisa imagem e detecta possível câncer de mama</p>
+                    <p class="mb-2"><strong class="text-slate-700">Corpo da requisição:</strong> Multipart form com imagem de mamografia</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Usuário Comum ou Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": {
+    "detections": [
+      {
+        "class_id": 1,
+        "confidence": 0.92,
+        "bbox": [150, 200, 250, 350]
+      }
+    ],
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de nenhuma imagem enviada <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Nenhuma imagem enviada",
+  "status_code": 400
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-POST">POST</span> /api/prediction/predict_tb
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Analisa imagem e prediz possível tuberculose</p>
+                    <p class="mb-2"><strong class="text-slate-700">Corpo da requisição:</strong> Multipart form com imagem de raio-X torácico</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Usuário Comum ou Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": {
+    "class_pred": "positive",
+    "probabilities": {
+      "negative": 0.25,
+      "positive": 0.75
+    }
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de nenhuma imagem enviada <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Nenhuma imagem enviada",
+  "status_code": 400
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-POST">POST</span> /api/prediction/predict_osteoporosis
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Analisa imagem e prediz possível osteoporose</p>
+                    <p class="mb-2"><strong class="text-slate-700">Corpo da requisição:</strong> Multipart form com imagem de raio-X da canela ou joelho</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Usuário Comum ou Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": {
+    "class_pred": "osteopenia",
+    "probabilities": {
+      "normal": 0.15,
+      "osteopenia": 0.65,
+      "osteoporosis": 0.20
+    }
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de nenhuma imagem enviada <span class="response-code code-400">400 BAD REQUEST</span>:</p>
+                    <pre><code>{
+  "error": "Bad Request",
+  "message": "Bad Request: Nenhuma imagem enviada",
+  "status_code": 400
+}</code></pre>
+                </div>
+            </details>
+
+            <h3 id="informacao-e-auditoria" class="text-2xl font-semibold text-slate-800 mb-4 mt-8">Informação e Auditoria</h3>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-GET">GET</span> /api/information/audits/{page}
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Retorna registros de auditoria paginados</p>
+                    <p class="mb-2"><strong class="text-slate-700">Parâmetros de rota:</strong> <code class="font-mono">page</code> (número da página)</p>
+                    <p class="mb-2"><strong class="text-slate-700">Parâmetros de query:</strong>
+                        <ul class="list-disc list-inside ml-4">
+                            <li><code class="font-mono">email</code> (opcional): filtrar por email do usuário</li>
+                            <li><code class="font-mono">path</code> (opcional): filtrar por caminho da requisição</li>
+                            <li><code class="font-mono">date_of_request</code> (opcional): filtrar por data da requisição</li>
+                        </ul>
+                    </p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": {
+    "audits": [
+      {
+        "id": "abb63cbe-e8ba-4ca8-9e9d-ede6f674eb648",
+        "user_email": "admin@exemplo.com",
+        "user_profile": "Administrador",
+        "method": "GET",
+        "path": "/api/users",
+        "ip": "192.168.1.100",
+        "date_of_request": "2024-03-15",
+        "hour_of_request": "14:30:25"
+      }
+    ],
+    "pagination": {
+      "current_page": 1,
+      "total_pages": 10,
+      "total_records": 150,
+      "records_per_page": 15
+    }
+  }
+}</code></pre>
+                    <p class="font-semibold text-slate-700">Resposta em caso de nenhum registro encontrado <span class="response-code code-404">404 NOT FOUND</span>:</p>
+                    <pre><code>{
+  "error": "Not Found",
+  "message": "Not Found: No audits found",
+  "status_code": 404
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-GET">GET</span> /api/information/audits/audit-filters
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Retorna opções de filtros disponíveis para auditoria</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": {
+    "available_data": {
+      "user_email": [
+        "admin@exemplo.com",
+        "usuario@exemplo.com"
+      ],
+      "path": [
+        "/api/users",
+        "/api/auth/login",
+        "/api/data/add-file"
+      ],
+      "method": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE"
+      ],
+      "date_of_request": [
+        "2024-03-15",
+        "2024-03-14",
+        "2024-03-13"
+      ]
+    }
+  }
+}</code></pre>
+                </div>
+            </details>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-GET">GET</span> /api/information/audits
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Retorna todos os registros de auditoria</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": [
+    {
+      "id": "abb63cbe-e8ba-4ca8-9e9d-ede6f674eb648",
+      "user_email": "admin@exemplo.com",
+      "user_profile": "Administrador",
+      "method": "GET",
+      "path": "/api/users",
+      "ip": "192.168.1.100",
+      "date_of_request": "2024-03-15",
+      "hour_of_request": "14:30:25"
+    },
+    {
+      "id": "abc123de-f456-7890-a123-456789abcdef",
+      "user_email": "usuario@exemplo.com",
+      "user_profile": "Usuario Comum",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "ip": "192.168.1.101",
+      "date_of_request": "2024-03-15",
+      "hour_of_request": "10:00:00"
+    }
+  ]
+}</code></pre>
+                </div>
+            </details>
+
+            <h3 id="informacoes-maquina" class="text-2xl font-semibold text-slate-800 mb-4 mt-8">Informações da Máquina</h3>
+
+            <details class="mb-4 rounded-lg shadow-md overflow-hidden">
+                <summary>
+                    <span class="endpoint-method method-GET">GET</span> /api/machine-information
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </summary>
+                <div class="p-4 bg-white border border-t-0 border-slate-200 rounded-b-lg">
+                    <p class="mb-2"><strong class="text-slate-700">Descrição:</strong> Retorna informações do sistema e métricas da máquina</p>
+                    <p class="mb-2"><strong class="text-slate-700">Nível de acesso:</strong> Administrador</p>
+                    <p class="font-semibold text-slate-700">Resposta em caso de sucesso <span class="response-code code-200">200 OK</span>:</p>
+                    <pre><code>{
+  "message": "Operation successful",
+  "status": 200,
+  "data": {
+    "cpu": {
+      "name": "Intel(R) Core(TM) i7-8750H CPU @ 2.20GHz",
+      "architecture": "x86_64",
+      "physical_cores": 6,
+      "logical_cores": 12,
+      "percent": 45.2,
+      "temperature": "65°C"
+    },
+    "memory": {
+      "total_gb": 16.0,
+      "available_gb": 8.5,
+      "used_gb": 7.5,
+      "percent": 46.9,
+      "free_percent": 53.1
+    },
+    "disk": {
+      "total_gb": 512.0,
+      "used_gb": 256.3,
+      "free_gb": 255.7,
+      "percent": 50.1,
+      "free_percent": 49.9
+    },
+    "network": {
+      "ip": "192.168.1.100"
+    },
+    "uptime": "2 dias, 14 horas, 32 minutos"
+  }
+}</code></pre>
+                </div>
+            </details>
+
+        </section>
+
+        <section id="codigos-de-erro-padrao" class="mb-12">
+            <h2 class="section-title">Códigos de Erro Padrão</h2>
+            <p class="mb-4">A API utiliza uma estrutura padronizada para retorno de erros. Todos os erros seguem o formato:</p>
+            <pre><code>{
+  "error": "Tipo do Erro",
+  "message": "Mensagem detalhada do erro",
+  "status_code": 400/401/403/404/405/500
+}</code></pre>
+            <h3 class="text-2xl font-semibold text-slate-700 mb-3">Códigos de Status HTTP Utilizados</h3>
+            <ul class="list-disc list-inside text-lg space-y-2">
+                <li><strong class="text-slate-700"><span class="response-code code-200">200 OK</span></strong>: Operação realizada com sucesso</li>
+                <li><strong class="text-slate-700"><span class="response-code code-201">201 CREATED</span></strong>: Recurso criado com sucesso</li>
+                <li><strong class="text-slate-700"><span class="response-code code-400">400 BAD REQUEST</span></strong>: Erro nos dados enviados pelo cliente
+                    <ul class="list-disc list-inside ml-6 text-base">
+                        <li>Campos obrigatórios vazios</li>
+                        <li>Formato de dados inválido</li>
+                        <li>Validações de negócio falharam</li>
+                        <li>Recursos duplicados</li>
+                    </ul>
+                </li>
+                <li><strong class="text-slate-700"><span class="response-code code-401">401 UNAUTHORIZED</span></strong>: Credenciais inválidas ou ausentes
+                    <ul class="list-disc list-inside ml-6 text-base">
+                        <li>Login com credenciais incorretas</li>
+                        <li>Token JWT inválido ou expirado</li>
+                    </ul>
+                </li>
+                <li><strong class="text-slate-700"><span class="response-code code-403">403 FORBIDDEN</span></strong>: Acesso negado
+                    <ul class="list-disc list-inside ml-6 text-base">
+                        <li>Usuário sem permissões para a operação</li>
+                        <li>Acesso negado a unidades de saúde específicas</li>
+                        <li>Perfil de usuário insuficiente</li>
+                    </ul>
+                </li>
+                <li><strong class="text-slate-700"><span class="response-code code-404">404 NOT FOUND</span></strong>: Recurso não encontrado
+                    <ul class="list-disc list-inside ml-6 text-base">
+                        <li>Usuário, dados ou registros inexistentes</li>
+                        <li>Endpoints não existentes</li>
+                    </ul>
+                </li>
+                <li><strong class="text-slate-700"><span class="response-code code-405">405 METHOD NOT ALLOWED</span></strong>: Método HTTP não permitido</li>
+                <li><strong class="text-slate-700"><span class="response-code code-500">500 INTERNAL SERVER ERROR</span></strong>: Erro interno do servidor
+                    <ul class="list-disc list-inside ml-6 text-base">
+                        <li>Falhas de banco de dados</li>
+                        <li>Erros na API de Machine Learning</li>
+                        <li>Problemas de processamento interno</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section id="estrutura-de-resposta-de-sucesso" class="mb-12">
+            <h2 class="section-title">Estrutura de Resposta de Sucesso</h2>
+            <p class="mb-4">Respostas de sucesso seguem o padrão:</p>
+            <pre><code>{
+  "message": "Mensagem de sucesso",
+  "status": 200/201,
+  "data": { /* dados retornados */ }
+}</code></pre>
+        </section>
+
+        <section id="seguranca" class="mb-12">
+            <h2 class="section-title">Segurança</h2>
+            <ul class="list-disc list-inside text-lg space-y-2">
+                <li>Middleware de autenticação via JWT</li>
+                <li>Criptografia de senhas usando Argon2</li>
+                <li>Registros de auditoria para todas as ações</li>
+                <li>Validação de permissões baseada em perfil de usuário</li>
+            </ul>
+        </section>
+
+        <section id="como-executar" class="mb-12">
+            <h2 class="section-title">Como Executar</h2>
+            <h3 class="text-2xl font-semibold text-slate-700 mb-3">Requisitos</h3>
+            <ul class="list-disc list-inside text-lg space-y-2 mb-6">
+                <li>Rust (versão estável)</li>
+                <li>PostgreSQL</li>
+                <li>Python 3.8+ (para o serviço ML)</li>
+                <li>Docker e Docker Compose (opcional)</li>
+            </ul>
+            <h3 class="text-2xl font-semibold text-slate-700 mb-3">Configuração do Ambiente</h3>
+            <ol class="list-decimal list-inside text-lg space-y-2 mb-6">
+                <li>Clone o repositório</li>
+                <li>Configure o arquivo <code class="font-mono">.env</code> baseado no <code class="font-mono">example.env</code></li>
+                <li>Execute as migrações do banco de dados</li>
+                <li>Compile e execute a API Rust</li>
+            </ol>
+            <pre><code># Configurar ambiente
+cp example.env .env
+# edite o arquivo .env com suas configurações
+
+# Se não estiver usando Docker Compose para a aplicação completa,
+# é necessário iniciar o banco de dados PostgreSQL:
+docker compose up db -d
+
+# Executar API
+cargo run
+
+# Para o serviço ML
+cd ml_models_api
+pip install -r requirements.txt
+python -m app.main
+</code></pre>
+            <h3 class="text-2xl font-semibold text-slate-700 mb-3">Usando Docker</h3>
+            <pre><code>docker-compose up -d
+</code></pre>
+        </section>
+
+        <section id="desenvolvimento" class="mb-12">
+            <h2 class="section-title">Desenvolvimento</h2>
+            <p class="mb-4">A API segue convenções de código Rust e está estruturada seguindo padrões de Clean Architecture. O sistema de rotas, handlers e serviços facilita a adição de novas funcionalidades.</p>
+            <p class="mb-4">Ao desenvolver novas funcionalidades:</p>
+            <ol class="list-decimal list-inside text-lg space-y-2">
+                <li>Defina modelos no módulo <code class="font-mono">domain/models</code></li>
+                <li>Crie interfaces de repositório em <code class="font-mono">domain/repositories</code></li>
+                <li>Implemente repositórios em <code class="font-mono">infrastructure/repositories</code></li>
+                <li>Implemente serviços em <code class="font-mono">application</code></li>
+                <li>Crie handlers em <code class="font-mono">handlers</code></li>
+                <li>Configure rotas em <code class="font-mono">routes</code></li>
+            </ol>
+        </section>
+
+        <section id="autor" class="mb-12">
+            <h2 class="section-title">Autor</h2>
+            <p class="text-lg"><a href="https://github.com/DiogoBrazil" target="_blank" class="text-blue-600 hover:underline">https://github.com/DiogoBrazil</a></p>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Smooth scroll for navigation links
+            document.querySelectorAll('.sidebar a').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 20, // Adjust for a little padding from the top
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
