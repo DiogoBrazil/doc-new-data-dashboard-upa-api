@@ -261,6 +261,19 @@ ml_models_api/           # Serviço Python para modelos de ML
             </ul>
         </section>
 
+        <section id="autenticacao-seguranca" class="mb-12">
+            <h2 class="text-2xl font-semibold text-slate-800 mb-4">Autenticação e Segurança</h2>
+            <p class="mb-2">
+                Para utilizar esta API, é obrigatório enviar a <code class="bg-slate-100 px-1 rounded">api_key</code> em <strong>todas</strong> as requisições, utilizando o header <code class="bg-slate-100 px-1 rounded">api_key</code>.
+            </p>
+            <p class="mb-2">
+                Além disso, para rotas que exigem autenticação, também é obrigatório enviar o token de acesso no header <code class="bg-slate-100 px-1 rounded">Authorization</code> no formato <code class="bg-slate-100 px-1 rounded">Bearer &lt;token&gt;</code>.
+            </p>
+            <p class="mb-2">
+                <strong>Observação:</strong> As rotas de login e recuperação de senha <strong>não</strong> exigem o envio do token, apenas da <code class="bg-slate-100 px-1 rounded">api_key</code>.
+            </p>
+        </section>
+        
         <section id="endpoints-api" class="mb-12">
             <h2 class="section-title">Endpoints API</h2>
 
